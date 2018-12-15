@@ -1,9 +1,9 @@
-    require("dotenv").config();
-    const keys = require('./keys');
-    var Spotify = require('node-spotify-api');
-    const moment = require('moment');
-    const request = require('request');
-    const fs = require('fs');
+require("dotenv").config();
+const keys = require('./keys');
+var Spotify = require('node-spotify-api');
+const moment = require('moment');
+const request = require('request');
+const fs = require('fs');
 
 
 display = function () {
@@ -17,12 +17,16 @@ searchSpotify = function (query) {
         if (err) {
             return console.log('Error occurred: ' + err);
         }
-    
-        var artist = data.tracks.items[0].album.artists[0].name;
-        var song = data.tracks.items[0].name;
-        var preview = data.tracks.items[0].preview_url;
-        var album = data.tracks.items[0].album.name;
-        console.log(`name: ${artist}\nsong: ${song}\npreview: ${preview}\nalbum: ${album}`);
+        if(query){
+            var artist = data.tracks.items[0].album.artists[0].name;
+            var song = data.tracks.items[0].name;
+            var preview = data.tracks.items[0].preview_url;
+            var album = data.tracks.items[0].album.name;
+            console.log(`name: ${artist}\nsong: ${song}\npreview: ${preview}\nalbum: ${album}`);
+        } else{
+            console.log("The Sign");
+        }
+        
 
     });
 
@@ -42,14 +46,14 @@ searchBands = function (Artists) {
         if (err) { return console.log(err); }
 
         var event = body[0];
-        if (event) {         
+        if (event) {
             console.log(`Venue:${event.venue.name}`);
-           
+
             console.log(`Location:${event.venue.city}`);
-            
+
             console.log(`Date:${event.datetime}`);
         } else {
-            console.log("The Sign");
+            console.log("sorry bro");
         }
 
 
@@ -57,21 +61,18 @@ searchBands = function (Artists) {
 
 }
 
-searchMovies = function (movieToSearchFor) {
+searchMovies = function (movieToSearchFor = "Mr. Nobody") {
     var queryUrl = "http://www.omdbapi.com/?t=" + movieToSearchFor + "&APIKEY=835d4083"
     console.log("searching movies");
 
 
     request(queryUrl, { json: true }, (err, res, body) => {
         if (err) { return console.log(err); }
-        
 
         var title = body;
         if (title) {
-            // var movieTitle = title;
-            console.log(`Movie Title: ${title}`);
-            var yearRelease = moment(title.Year).format("MM/DD/YYYY");
-            console.log(`Date: ${yearRelease}`);
+                    
+            console.log(`Date:`, title.Year);
             // var rating = title.Ratings[0].Value;
             console.log(`IMDB Rating: ${title.Ratings[0].Value}`);
             // var rTRating = title.Ratings[1].Value;
@@ -83,7 +84,7 @@ searchMovies = function (movieToSearchFor) {
             // var plot = title.Plot;
             console.log(`Plot: ${title.Plot}`);
             // var cast = title.Actors;
-            console.log(`Cast: ${title.Actor}`);
+            console.log(`Cast: ${title.Actors}`);
         } else {
             console.log(`If you haven't watched "Mr.Nobody" then you should! http://www.imdb.com/title/tt0485947/`);
             console.log("It's on Netflix!");
@@ -96,7 +97,7 @@ searchMovies = function (movieToSearchFor) {
 
 function doWhatItSays() {
     fs.readFile("random.txt", "utf8", (error, content) => {
-            // if an error occurs, log the error to the console
+        // if an error occurs, log the error to the console
         if (error) {
             return console.log(error);
         }
@@ -111,22 +112,22 @@ function doWhatItSays() {
         runCommand(contentArr[0], searchTerm);
     });
 }
-runCommand = function(command, query){
-     //command supported do stuff
-     switch (command) {
-         case "spotify-this-song":
-             searchSpotify(query)
-             break
-         case "concert-this":
-             searchBands(query)
-             break
-         case "movie-this":
-             searchMovies(query)
-             break
-         case "do-what-it-says":
-             doWhatItSays(query)
-             break
-     }
+runCommand = function (command, query) {
+    //command supported do stuff
+    switch (command) {
+        case "spotify-this-song":
+            searchSpotify(query)
+            break
+        case "concert-this":
+            searchBands(query)
+            break
+        case "movie-this":
+            searchMovies(query)
+            break
+        case "do-what-it-says":
+            doWhatItSays(query)
+            break
+    }
 }
 parseAndRunCommand = function () {
     console.log(keys.spotify.id);
@@ -135,10 +136,10 @@ parseAndRunCommand = function () {
     console.log(command)
 
     var query = process.argv[3]
-    console.log(query)
+   
 
     if (checkIfCommandIsSupported(command)) {
-       runCommand(command, query);
+        runCommand(command, query);
 
     }
     else {
