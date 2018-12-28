@@ -12,20 +12,18 @@ display = function () {
 
 searchSpotify = function (query) {
     var spotify = new Spotify(keys.spotify);
-
+    query = query || "Ace of Base, The Sign";
     spotify.search({ type: 'track', query: query, limit: 1 }, function (err, data) {
         if (err) {
             return console.log('Error occurred: ' + err);
         }
-        if(query){
+        
             var artist = data.tracks.items[0].album.artists[0].name;
             var song = data.tracks.items[0].name;
             var preview = data.tracks.items[0].preview_url;
             var album = data.tracks.items[0].album.name;
             console.log(`name: ${artist}\nsong: ${song}\npreview: ${preview}\nalbum: ${album}`);
-        } else{
-            console.log("The Sign");
-        }
+        
         
 
     });
@@ -148,8 +146,6 @@ parseAndRunCommand = function () {
 
 }
 parseAndRunCommand();
-
-
 
 
 
